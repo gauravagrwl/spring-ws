@@ -23,9 +23,14 @@ import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
 import javax.xml.soap.SOAPConstants;
 import javax.xml.soap.SOAPMessage;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.dom.DOMSource;
+
+import org.apache.axiom.om.OMXMLBuilderFactory;
+import org.apache.axiom.soap.SOAPModelBuilder;
+import org.junit.Assert;
+import org.junit.Before;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -43,14 +48,7 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.xml.transform.StringSource;
 import org.springframework.xml.xpath.Jaxp13XPathTemplate;
 
-import org.apache.axiom.soap.SOAP12Constants;
-import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
-import org.junit.Assert;
-import org.junit.Before;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public abstract class Wss4jTestCase {
 
@@ -81,6 +79,7 @@ public abstract class Wss4jTestCase {
 		namespaces.put("echo", "http://www.springframework.org/spring-ws/samples/echo");
 		namespaces.put("wsu",
 				"http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd");
+		namespaces.put("saml", "urn:oasis:names:tc:SAML:2.0:assertion");
 		namespaces.put("test", "http://test");
 		xpathTemplate.setNamespaces(namespaces);
 		onSetup();
@@ -154,9 +153,9 @@ public abstract class Wss4jTestCase {
 			assertTrue("Could not load Axiom message [" + resource + "]", resource.exists());
 			is = resource.getInputStream();
 
-			XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader(is);
-			StAXSOAPModelBuilder builder = new StAXSOAPModelBuilder(parser, null);
-			org.apache.axiom.soap.SOAPMessage soapMessage = builder.getSoapMessage();
+			SOAPModelBuilder builder = OMXMLBuilderFactory.createSOAPModelBuilder(is, null);
+			org.apache.axiom.soap.SOAPMessage soapMessage = builder.getSOAPMessage();
+			builder.detach();
 			return new AxiomSoapMessage(soapMessage, "", true, true);
 		}
 		finally {
@@ -172,9 +171,9 @@ public abstract class Wss4jTestCase {
 			assertTrue("Could not load Axiom message [" + resource + "]", resource.exists());
 			is = resource.getInputStream();
 
-			XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader(is);
-			StAXSOAPModelBuilder builder = new StAXSOAPModelBuilder(parser, SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
-			org.apache.axiom.soap.SOAPMessage soapMessage = builder.getSoapMessage();
+			SOAPModelBuilder builder = OMXMLBuilderFactory.createSOAPModelBuilder(is, null);
+			org.apache.axiom.soap.SOAPMessage soapMessage = builder.getSOAPMessage();
+			builder.detach();
 			return new AxiomSoapMessage(soapMessage, "", true, true);
 		}
 		finally {

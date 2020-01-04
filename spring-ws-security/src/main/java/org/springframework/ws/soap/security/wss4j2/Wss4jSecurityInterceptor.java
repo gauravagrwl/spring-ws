@@ -143,6 +143,8 @@ public class Wss4jSecurityInterceptor extends AbstractWsSecurityInterceptor impl
 
 	private boolean securementUseDerivedKey;
 	
+	private CallbackHandler samlCallbackHandler;
+	
 	// Allow RSA 15 to maintain default behavior
 	private boolean allowRSA15KeyTransportAlgorithm = true;
 
@@ -373,6 +375,15 @@ public class Wss4jSecurityInterceptor extends AbstractWsSecurityInterceptor impl
 	public void setSecurementUseDerivedKey(boolean securementUseDerivedKey) {
 		this.securementUseDerivedKey = securementUseDerivedKey;
 	}
+	
+	/**
+	 * Sets the SAML Callback used for generating SAML tokens.
+	 * 
+	 * @param samlCallback
+	 */
+	public void setSecurementSamlCallbackHandler(CallbackHandler samlCallbackHandler) {
+		this.samlCallbackHandler = samlCallbackHandler;
+	}
 
 	/** Sets the server-side time to live */
 	public void setValidationTimeToLive(int validationTimeToLive) {
@@ -595,7 +606,11 @@ public class Wss4jSecurityInterceptor extends AbstractWsSecurityInterceptor impl
 		requestData.setWssConfig(wssConfig);
 
 		messageContext.setProperty(WSHandlerConstants.TTL_TIMESTAMP, Integer.toString(securementTimeToLive));
-
+		
+		if (this.samlCallbackHandler != null) {
+			messageContext.setProperty(WSHandlerConstants.SAML_CALLBACK_REF, this.samlCallbackHandler);
+		}
+		
 		// allow for qualified password types for .Net interoperability
 		requestData.setAllowNamespaceQualifiedPasswordTypes(true);
 
@@ -625,8 +640,7 @@ public class Wss4jSecurityInterceptor extends AbstractWsSecurityInterceptor impl
 		requestData.setAllowRSA15KeyTransportAlgorithm(allowRSA15KeyTransportAlgorithm);
 		
 		requestData.setDisableBSPEnforcement(!bspCompliant);
-		if (requestData.getBSPEnforcer() != null)
-		{
+		if (requestData.getBSPEnforcer() != null) {
 			requestData.getBSPEnforcer().setDisableBSPRules(!bspCompliant);
 		}
 		// allow for qualified password types for .Net interoperability
@@ -643,7 +657,7 @@ public class Wss4jSecurityInterceptor extends AbstractWsSecurityInterceptor impl
 			logger.debug("Validating message [" + soapMessage + "] with actions [" + validationActions + "]");
 		}
 
-		if (validationActionsVector.contains(WSConstants.NO_SECURITY)) {
+		if (CollectionUtils.isEmpty(validationActionsVector)) {
 			return;
 		}
 

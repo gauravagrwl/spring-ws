@@ -31,6 +31,7 @@ import org.xml.sax.SAXException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
+import org.springframework.xml.DocumentBuilderFactoryUtils;
 import org.springframework.xml.sax.SaxUtils;
 import org.springframework.xml.validation.XmlValidator;
 import org.springframework.xml.validation.XmlValidatorFactory;
@@ -43,11 +44,12 @@ import org.springframework.xml.validation.XmlValidatorFactory;
  *
  * @author Mark LaFond
  * @author Arjen Poutsma
+ * @author Greg Turnquist
  * @since 1.5.0
  */
 public class SimpleXsdSchema implements XsdSchema, InitializingBean {
 
-	private static DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+	private static DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactoryUtils.newInstance();
 
 	private static final String SCHEMA_NAMESPACE = "http://www.w3.org/2001/XMLSchema";
 
@@ -91,6 +93,9 @@ public class SimpleXsdSchema implements XsdSchema, InitializingBean {
 
 	@Override
 	public String getTargetNamespace() {
+
+		Assert.notNull(schemaElement, "schemaElement must not be null! Did you run afterPropertiesSet() or register this as a Spring bean?");
+		
 		return schemaElement.getAttribute("targetNamespace");
 	}
 

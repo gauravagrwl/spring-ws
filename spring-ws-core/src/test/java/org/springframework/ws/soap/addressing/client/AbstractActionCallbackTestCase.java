@@ -24,6 +24,10 @@ import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import org.springframework.ws.soap.addressing.AbstractWsAddressingTestCase;
 import org.springframework.ws.soap.addressing.core.EndpointReference;
 import org.springframework.ws.soap.addressing.messageid.MessageIdStrategy;
@@ -33,10 +37,6 @@ import org.springframework.ws.transport.WebServiceConnection;
 import org.springframework.ws.transport.context.DefaultTransportContext;
 import org.springframework.ws.transport.context.TransportContext;
 import org.springframework.ws.transport.context.TransportContextHolder;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 import static org.easymock.EasyMock.*;
 
@@ -78,7 +78,7 @@ public abstract class AbstractActionCallbackTestCase extends AbstractWsAddressin
 		callback.doWithMessage(message);
 
 		SaajSoapMessage expected = loadSaajMessage(getTestPath() + "/valid.xml");
-		assertXMLEqual("Invalid message", expected, message);
+		assertXMLSimilar("Invalid message", expected, message);
 
 		verify(strategyMock, connectionMock);
 	}
@@ -100,7 +100,7 @@ public abstract class AbstractActionCallbackTestCase extends AbstractWsAddressin
 		callback.doWithMessage(message);
 
 		SaajSoapMessage expected = loadSaajMessage(getTestPath() + "/valid.xml");
-		assertXMLEqual("Invalid message", expected, message);
+		assertXMLSimilar("Invalid message", expected, message);
 		verify(strategyMock, connectionMock);
 	}
 

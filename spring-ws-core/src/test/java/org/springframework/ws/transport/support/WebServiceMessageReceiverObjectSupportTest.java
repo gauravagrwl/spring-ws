@@ -16,10 +16,8 @@
 
 package org.springframework.ws.transport.support;
 
-import java.net.URI;
 import javax.xml.namespace.QName;
 
-import static org.easymock.EasyMock.*;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +29,9 @@ import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.SoapVersion;
 import org.springframework.ws.transport.FaultAwareWebServiceConnection;
 import org.springframework.ws.transport.WebServiceMessageReceiver;
+
+import static org.easymock.EasyMock.*;
+
 public class WebServiceMessageReceiverObjectSupportTest {
 
 	private WebServiceMessageReceiverObjectSupport receiverSupport;
@@ -43,6 +44,7 @@ public class WebServiceMessageReceiverObjectSupportTest {
 
 	@Before
 	public void setUp() throws Exception {
+
 		receiverSupport = new MyReceiverSupport();
 		messageFactory = new MockWebServiceMessageFactory();
 		receiverSupport.setMessageFactory(messageFactory);
@@ -52,7 +54,7 @@ public class WebServiceMessageReceiverObjectSupportTest {
 
 	@Test
 	public void handleConnectionResponse() throws Exception {
-		expect(connectionMock.getUri()).andReturn(new URI("http://example.com"));
+
 		expect(connectionMock.receive(messageFactory)).andReturn(request);
 		connectionMock.setFaultCode(null);
 		connectionMock.send(isA(WebServiceMessage.class));
@@ -78,7 +80,6 @@ public class WebServiceMessageReceiverObjectSupportTest {
 	public void handleConnectionFaultResponse() throws Exception {
 		final QName faultCode = SoapVersion.SOAP_11.getClientOrSenderFaultName();
 
-		expect(connectionMock.getUri()).andReturn(new URI("http://example.com"));
 		expect(connectionMock.receive(messageFactory)).andReturn(request);
 		connectionMock.setFaultCode(faultCode);
 		connectionMock.send(isA(WebServiceMessage.class));
@@ -104,7 +105,7 @@ public class WebServiceMessageReceiverObjectSupportTest {
 
 	@Test
 	public void handleConnectionNoResponse() throws Exception {
-		expect(connectionMock.getUri()).andReturn(new URI("http://example.com"));
+
 		expect(connectionMock.receive(messageFactory)).andReturn(request);
 		connectionMock.close();
 

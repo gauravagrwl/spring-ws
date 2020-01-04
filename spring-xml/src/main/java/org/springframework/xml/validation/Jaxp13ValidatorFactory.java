@@ -32,6 +32,7 @@ import org.springframework.core.io.Resource;
  * Internal class that uses JAXP 1.0 features to create {@code XmlValidator} instances.
  *
  * @author Arjen Poutsma
+ * @author Greg Turnquist
  * @since 1.0.0
  */
 abstract class Jaxp13ValidatorFactory {
